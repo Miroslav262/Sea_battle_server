@@ -1,11 +1,11 @@
-name: Deploy Spring Boot Server
+name: Deploy via Docker
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,21 +18,28 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Build with Maven
+      - name: Build JAR
         run: mvn -B package --file pom.xml
+
+      - name: Build Docker image
+        run: docker build -t sea-battle:latest .
+
+      - name: Save Docker image to file
+        run: docker save sea-battle:latest -o sea-battle.tar
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Copy JAR to server
-        run: |
-          scp -o StrictHostKeyChecking=no target/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/${{ secrets.SERVER_USER }}/app.jar
+      - name: Copy Docker image to server
+        run: scp -o StrictHostKeyChecking=no sea-battle.tar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/${{ secrets.SERVER_USER }}/sea-battle/sea-battle.tar
 
-      - name: Restart server app
+      - name: Load image and restart container
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            pkill -f 'java -jar' || true
-            nohup java -jar /home/${{ secrets.SERVER_USER }}/app.jar > app.log 2>&1 &
+            cd /home/${{ secrets.SERVER_USER }}/sea-battle &&
+            docker load -i sea-battle.tar &&
+            docker compose down &&
+            docker compose up -d
           "

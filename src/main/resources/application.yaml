@@ -1,3 +1,10 @@
 spring:
+  docker:
+    compose:
+      enabled: false
   application:
     name: Sea_battle_server
+
+server:
+  port: ${APP_PORT:8085}
+
