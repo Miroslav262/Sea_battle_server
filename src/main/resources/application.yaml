@@ -1,0 +1,3 @@
+spring:
+  application:
+    name: Sea_battle_server
