@@ -1,7 +1,0 @@
-services:
-  sea-battle-server:
-    image: sea-battle:latest
-    environment:
-      - APP_PORT=8085
-    ports:
-      - "8085:8085"
