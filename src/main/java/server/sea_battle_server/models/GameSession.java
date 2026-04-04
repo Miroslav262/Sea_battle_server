@@ -1,9 +1,9 @@
 package server.sea_battle_server.models;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
-import tools.jackson.databind.JsonNode;
 
 public class GameSession {
 

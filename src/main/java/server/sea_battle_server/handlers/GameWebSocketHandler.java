@@ -1,13 +1,15 @@
 package server.sea_battle_server.handlers;
 
-import org.jspecify.annotations.NonNull;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.lang.NonNull;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import server.sea_battle_server.managers.GameSessionManager;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
+
 
 public class GameWebSocketHandler extends TextWebSocketHandler {
 
