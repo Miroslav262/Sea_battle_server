@@ -6,5 +6,5 @@ spring:
     name: Sea_battle_server
 
 server:
-  port: ${APP_PORT:8085}
+  port: ${APP_PORT:8080}
 
