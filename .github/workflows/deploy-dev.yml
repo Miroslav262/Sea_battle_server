@@ -28,6 +28,9 @@ jobs:
       - name: Save Docker image
         run: docker save sea-battle-dev -o sea-battle-dev.tar
 
+      - name: Fix permissions for tar
+        run: chmod 644 sea-battle-dev.tar
+
       - name: Copy image to server
         uses: appleboy/scp-action@v0.1.7
         with:
