@@ -33,7 +33,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "sea-battle-dev.tar"
           target: "/home/${{ secrets.SERVER_USER }}/sea-battle-dev/"
 
@@ -42,7 +42,7 @@ jobs:
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/${{ secrets.SERVER_USER }}/sea-battle-dev
             docker load -i sea-battle-dev.tar
