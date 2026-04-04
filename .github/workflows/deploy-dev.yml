@@ -13,10 +13,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Build image
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build JAR
+        run: mvn -B package --file pom.xml
+
+      - name: Build Docker image
         run: docker build -t sea-battle-dev .
 
-      - name: Save image
+      - name: Save Docker image
         run: docker save sea-battle-dev -o sea-battle-dev.tar
 
       - name: Copy image to server
