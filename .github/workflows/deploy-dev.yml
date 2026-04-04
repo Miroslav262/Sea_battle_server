@@ -1,0 +1,41 @@
+name: Deploy Dev
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build image
+        run: docker build -t sea-battle-dev .
+
+      - name: Save image
+        run: docker save sea-battle-dev -o sea-battle-dev.tar
+
+      - name: Copy image to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "sea-battle-dev.tar"
+          target: "/home/${{ secrets.SERVER_USER }}/sea-battle-dev/"
+
+      - name: Load image and restart container
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /home/${{ secrets.SERVER_USER }}/sea-battle-dev
+            docker load -i sea-battle-dev.tar
+            docker compose down
+            docker compose up -d
