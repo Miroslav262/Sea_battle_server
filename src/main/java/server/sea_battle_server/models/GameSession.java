@@ -38,7 +38,10 @@ public class GameSession {
     }
 
     public WebSocketSession randomFirstPlayer() {
-        return Math.random() < 0.5 ? player1 : player2;
+        boolean p = Math.random() < 0.5;
+        System.out.println("first turn: "+(p ? "first" : "second"));
+        return p ? player1 : player2;
+
     }
 
     public WebSocketSession other(WebSocketSession p) {

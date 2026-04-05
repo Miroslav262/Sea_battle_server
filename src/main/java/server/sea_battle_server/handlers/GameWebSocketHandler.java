@@ -24,6 +24,7 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(@NonNull WebSocketSession session, TextMessage message) throws Exception {
         JsonNode json = mapper.readTree(message.getPayload());
+        System.out.println(json.asText());
         String type = json.get("type").asText();
 
         switch (type) {
@@ -38,6 +39,8 @@ public class GameWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
+        System.out.println("Client disconnected" + session.getId());
         sessionManager.removePlayer(session);
+
     }
 }
