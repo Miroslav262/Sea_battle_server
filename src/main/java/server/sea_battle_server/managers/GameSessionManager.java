@@ -65,10 +65,15 @@ public class GameSessionManager {
             WebSocketSession second = session.other(first);
 
             System.out.println("Client: " + first.getId()+ " you");
-            System.out.println("Client: " + first.getId()+ " enemy");
+            System.out.println("Client: " + second.getId()+ " enemy");
 
-            first.sendMessage(json("gameState", Map.of("turn", "you")));
-            second.sendMessage(json("gameState", Map.of("turn", "enemy")));
+            WebSocketMessage<?> firstMessage = json("gameState", Map.of("turn", "you"));
+            System.out.println("firstMessage: " + firstMessage.getPayload());
+            first.sendMessage(firstMessage);
+
+            WebSocketMessage<?> secondMessage = json("gameState", Map.of("turn", "enemy"));
+            System.out.println("secondMessage: " + secondMessage.getPayload());
+            second.sendMessage(secondMessage);
         }
     }
 
