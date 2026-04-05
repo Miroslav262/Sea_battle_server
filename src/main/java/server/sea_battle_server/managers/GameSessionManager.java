@@ -32,7 +32,7 @@ public class GameSessionManager {
         sessions.put(code, session);
         playerToSession.put(creator.getId(), code);
         WebSocketMessage<?> message = json("invite", Map.of("code", code));
-        System.out.println(message);
+        System.out.println("Invite code" + message.getPayload());
         creator.sendMessage(message);
     }
 
@@ -50,19 +50,22 @@ public class GameSessionManager {
         playerToSession.put(joiner.getId(), code);
 
         WebSocketMessage<?> message = json("create", Map.of("status", "ok"));
-        System.out.println(message);
+        System.out.println("Invite status" + message.getPayload());
         session.getPlayer2().sendMessage(message);
     }
 
 
     public void handleGameState(WebSocketSession player, JsonNode json) throws IOException {
         GameSession session = getSession(player);
-        System.out.println("ships: " + json.get("ships"));
+        System.out.println("ships: " + json.get("ships").toPrettyString());
         session.setShips(player, json.get("ships"));
 
         if (session.bothReady()) {
             WebSocketSession first = session.randomFirstPlayer();
             WebSocketSession second = session.other(first);
+
+            System.out.println("Client: " + first.getId()+ " you");
+            System.out.println("Client: " + first.getId()+ " enemy");
 
             first.sendMessage(json("gameState", Map.of("turn", "you")));
             second.sendMessage(json("gameState", Map.of("turn", "enemy")));
@@ -74,14 +77,11 @@ public class GameSessionManager {
         GameSession session = getSession(player);
         WebSocketSession enemy = session.other(player);
 
-        WebSocketMessage<?> message = json("shot", Map.of(
-                "col", json.get("col").asInt(),
-                "row", json.get("row").asInt()
-        ));
+        System.out.println("shot message: " + json.toPrettyString());
 
-        System.out.println("shot message: " + message);
-        enemy.sendMessage(message);
+        enemy.sendMessage(new TextMessage(json.toString()));
     }
+
 
 
     public void handleShotResult(WebSocketSession player, JsonNode json) throws IOException {
@@ -90,15 +90,15 @@ public class GameSessionManager {
 
         session.registerShotResult(enemy, json.get("result").asText());
 
-        WebSocketMessage<?> message = json("shot-result", Map.of("result", json.get("result").asText()));
-        System.out.println("shot-result" + message);
+        System.out.println("shot-result: " + json.toPrettyString());
 
-        enemy.sendMessage(message);
+        enemy.sendMessage(new TextMessage(json.toString()));
 
         if (session.isGameOver()) {
             sendGameResult(session);
         }
     }
+
 
 
     private void sendGameResult(GameSession session) throws IOException {
