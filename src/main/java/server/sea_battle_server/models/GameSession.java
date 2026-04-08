@@ -60,7 +60,7 @@ public class GameSession {
     }
 
     public WebSocketSession getWinner() {
-        return hp1 == 0 ? player2 : player1;
+        return hp1 == 0 ? player1 : player2;
     }
 
     public JsonNode getShips(WebSocketSession player) {
