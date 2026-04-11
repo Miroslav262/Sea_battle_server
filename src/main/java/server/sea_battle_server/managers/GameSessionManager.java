@@ -124,8 +124,14 @@ public class GameSessionManager {
         ));
         loser.sendMessage(messageToLose);
 
+
+        sessions.remove(session.getCode());
+        playerToSession.remove(winner.getId());
+        playerToSession.remove(loser.getId());
+
         session.close();
     }
+
 
 
 
@@ -177,6 +183,7 @@ public class GameSessionManager {
             e.printStackTrace();
         }
     }
+
 
 
 }
