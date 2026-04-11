@@ -150,7 +150,8 @@
                         "y": 0
                       }
                     }
-                  ]
+                  ],
+                "reason": "opponent_disconnected" // optional ("reason": "finish")
             }
 
 

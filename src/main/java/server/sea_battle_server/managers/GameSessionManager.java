@@ -110,22 +110,23 @@ public class GameSessionManager {
         WebSocketSession winner = session.getWinner();
         WebSocketSession loser = session.other(winner);
 
-        WebSocketMessage<?> messegeToWin = json("gameResult", Map.of(
+        WebSocketMessage<?> messageToWin = json("gameResult", Map.of(
                 "state", "win",
-                "ships", session.getShips(loser)
+                "ships", session.getShips(loser),
+                "reason", "finish"
         ));
-        System.out.println("messageToWin: " + messegeToWin);
-        winner.sendMessage(messegeToWin);
+        winner.sendMessage(messageToWin);
 
-        WebSocketMessage<?> messegeToLose = json("gameResult", Map.of(
+        WebSocketMessage<?> messageToLose = json("gameResult", Map.of(
                 "state", "lose",
-                "ships", session.getShips(winner)
+                "ships", session.getShips(winner),
+                "reason", "finish"
         ));
-        System.out.println("messageToLose: " + messegeToLose);
-        loser.sendMessage(messegeToLose);
+        loser.sendMessage(messageToLose);
 
         session.close();
     }
+
 
 
     private GameSession getSession(WebSocketSession player) {
@@ -150,8 +151,32 @@ public class GameSessionManager {
         return new TextMessage(node.toString());
     }
 
-    public void removePlayer(WebSocketSession session) {
-        String code = playerToSession.remove(session.getId());
-        if (code != null) sessions.remove(code);
+    public void removePlayer(WebSocketSession disconnected) {
+        String code = playerToSession.remove(disconnected.getId());
+        if (code == null) return;
+
+        GameSession session = sessions.remove(code);
+        if (session == null) return;
+
+        WebSocketSession other = session.other(disconnected);
+        if (other == null || !other.isOpen()) return;
+
+        try {
+            Object ships = session.getShips(disconnected);
+
+            WebSocketMessage<?> winMessage = json("gameResult", Map.of(
+                    "state", "win",
+                    "ships", ships,
+                    "reason", "opponent_disconnected"
+            ));
+
+            other.sendMessage(winMessage);
+            session.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+
 }
